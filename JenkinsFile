@@ -10,16 +10,15 @@ pipeline {
 
     }
 
-    stages {
-         stage('Checkout code') {
-            steps {
-                withCredentials([sshUserPrivateKey(credentialsId: '952b9bb8-cd98-43da-a69a-f4fc933f96c8', keyFileVariable: 'SSH_KEY')]) {
-                    git branch: 'main', url: 'git@github.com:Pra-wnn/Flask_JenkinsCI-CD.git', credentialsId: '952b9bb8-cd98-43da-a69a-f4fc933f96c8'
-                }
+   stages {
+    stage('Checkout code') {
+        steps {
+            withCredentials([sshUserPrivateKey(credentialsId: "${GITHUB_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                git branch: 'main', url: 'git@github.com:Pra-wnn/Flask_JenkinsCI-CD.git', credentialsId: "${GITHUB_CREDENTIALS_ID}"
             }
         }
-
-
+    }
+}
         stage('Setup Python') {
             steps {
                 sh 'sudo apt-get update'
