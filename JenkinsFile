@@ -10,10 +10,6 @@ pipeline {
 
     }
 
-    environment {
-        GITHUB_CREDENTIALS_ID = 'GITHUB_CREDENTIALS_ID'
-    }
-
    stages {
     stage('Checkout code') {
         steps {
