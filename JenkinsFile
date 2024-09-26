@@ -15,11 +15,12 @@ pipeline {
     }
 
     stages {
-        stage('Checkout code') {
-
+          stage('Checkout code') {
             steps {
-                git branch: 'main', url: 'git@github.com:Pra-wnn/Flask_JenkinsCI-CD.git', credentialsId: "${GITHUB_CREDENTIALS_ID}"
-        }
+                withCredentials([sshUserPrivateKey(credentialsId: 'GITHUB_CREDENTIALS_ID', keyFileVariable: 'SSH_KEY')]) {
+                    git branch: 'main', url: 'git@github.com:Pra-wnn/Flask_JenkinsCI-CD.git', credentialsId: 'GITHUB_CREDENTIALS_ID'
+                }
+            }
         }
 
         stage('Setup Python') {
