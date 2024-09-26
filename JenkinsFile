@@ -13,8 +13,8 @@ pipeline {
    stages {
     stage('Checkout code') {
         steps {
-            withCredentials([sshUserPrivateKey(credentialsId: "${GITHUB_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                git branch: 'main', url: 'git@github.com:Pra-wnn/Flask_JenkinsCI-CD.git', credentialsId: "${GITHUB_CREDENTIALS_ID}"
+            withCredentials([sshUserPrivateKey(credentialsId: "Jenkins_Key", keyFileVariable: 'SSH_KEY')]) {
+                git branch: 'main', url: 'git@github.com:Pra-wnn/Flask_JenkinsCI-CD.git', credentialsId: "Jenkins_Key"
             }
         }
     }
