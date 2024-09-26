@@ -11,13 +11,39 @@ pipeline {
     }
 
    stages {
-    stage('Checkout code') {
-        steps {
-            withCredentials([sshUserPrivateKey(credentialsId: "${GITHUB_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                git branch: 'main', url: 'git@github.com:Pra-wnn/Flask_JenkinsCI-CD.git', credentialsId: "${GITHUB_CREDENTIALS_ID}"
+    // stage('Checkout code') {
+    //     steps {
+    //         withCredentials([sshUserPrivateKey(credentialsId: "${GITHUB_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+    //             git branch: 'main', url: 'git@github.com:Pra-wnn/Flask_JenkinsCI-CD.git', credentialsId: "${GITHUB_CREDENTIALS_ID}"
+    //         }
+    //     }
+    // }
+
+stage('Checkout code') {
+            steps {
+                script {
+                    // Clean workspace
+                    deleteDir()
+                    
+                    // Debug: Print SSH key info
+                    sh 'ssh-add -l'
+                    
+                    withCredentials([sshUserPrivateKey(credentialsId: "${GITHUB_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        // Debug: Test SSH connection
+                        sh "ssh -T -o StrictHostKeyChecking=no git@github.com || true"
+                        
+                        // Attempt to clone
+                        sh """
+                            GIT_SSH_COMMAND='ssh -i $SSH_KEY -o StrictHostKeyChecking=no' \
+                            git clone --branch main git@github.com:Pra-wnn/Flask_JenkinsCI-CD.git .
+                        """
+                        
+                        // Debug: Show remote information
+                        sh "git remote -v"
+                    }
+                }
             }
-        }
-    }
+
 
         stage('Setup Python') {
             steps {
