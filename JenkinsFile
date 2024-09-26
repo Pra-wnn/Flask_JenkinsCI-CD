@@ -14,7 +14,7 @@ pipeline {
         stage('Checkout code') {
 
             steps {
-                git branch: 'main', url: 'https://github.com/Pra-wnn/Flask_JenkinsCI-CD.git'
+                git branch: 'main', url: 'git@github.com:Pra-wnn/Flask_JenkinsCI-CD.git', credentialsId: 'your-credentials-id'
         }
         }
 
