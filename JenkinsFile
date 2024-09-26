@@ -10,7 +10,7 @@ pipeline {
 
     }
 
-//    stages {
+   stages {
     // stage('Checkout code') {
     //     steps {
     //         withCredentials([sshUserPrivateKey(credentialsId: "${GITHUB_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
@@ -43,7 +43,7 @@ pipeline {
                     }
                 }
             }
-
+        }
 
         stage('Setup Python') {
             steps {
