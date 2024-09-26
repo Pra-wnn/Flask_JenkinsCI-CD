@@ -10,11 +10,15 @@ pipeline {
 
     }
 
+    environment {
+        GITHUB_CREDENTIALS_ID = credentials('GITHUB_CREDENTIALS_ID')
+    }
+
     stages {
         stage('Checkout code') {
 
             steps {
-                git branch: 'main', url: 'git@github.com:Pra-wnn/Flask_JenkinsCI-CD.git', credentialsId: 'your-credentials-id'
+                git branch: 'main', url: 'git@github.com:Pra-wnn/Flask_JenkinsCI-CD.git', credentialsId: "${GITHUB_CREDENTIALS_ID}"
         }
         }
 
