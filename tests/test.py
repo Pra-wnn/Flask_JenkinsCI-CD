@@ -16,7 +16,9 @@ class AppTestCase(unittest.TestCase):
         response = self.app.get('/')
         self.assertEqual(response.status_code, 200)
         # Check if the title of the page is in the response data
-        self.assertIn(b'Flask MariaDB Example', response.data)
+        self.assertIn(b'Flask MariaDB Exampless', response.data)
+    
+    
 
 if __name__ == '__main__':
     unittest.main()
