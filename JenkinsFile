@@ -1,61 +1,29 @@
 pipeline {
-
     agent any
 
     triggers {
-        // pollSCM('H/5 * * * *')
-
         githubPush()
-
-
     }
 
-   stages {
-    // stage('Checkout code') {
-    //     steps {
-    //         withCredentials([sshUserPrivateKey(credentialsId: "${GITHUB_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-    //             git branch: 'main', url: 'git@github.com:Pra-wnn/Flask_JenkinsCI-CD.git', credentialsId: "${GITHUB_CREDENTIALS_ID}"
-    //         }
-    //     }
-    // }
-
-    stage('Checkout code') {
-            steps {
-                script {
-                    // Clean workspace
-                    deleteDir()
-                    
-                    // Debug: Print SSH key info
-                    sh 'ssh-add -l'
-                    
-                    withCredentials([sshUserPrivateKey(credentialsId: "${GITHUB_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                        // Debug: Test SSH connection
-                        sh "ssh -T -o StrictHostKeyChecking=no git@github.com || true"
+    stages {
+       
+                stage('Git Checkout') {
+                    steps {
                         
-                        // Attempt to clone
-                        sh """
-                            GIT_SSH_COMMAND='ssh -i $SSH_KEY -o StrictHostKeyChecking=no' \
-                            git clone --branch main git@github.com:Pra-wnn/Flask_JenkinsCI-CD.git .
-                        """
-                        
-                        // Debug: Show remote information
-                        sh "git remote -v"
+                        git branch: 'main' , changelog: false , url: 'https://github.com/Pra-wnn/Flask_JenkinsCI-CD'
                     }
                 }
-            }
-        }
 
         stage('Setup Python') {
             steps {
                 sh 'sudo apt-get update'
-                sh 'sudo apt-get install python3.9 python3.9venv -y'
-        
+                sh 'sudo apt-get install python3.9 python3.9-venv -y'
             }
         }
 
-        stage('Create Virtual Environment Install dependencies') {
+        stage('Create Virtual Environment and Install dependencies') {
             steps {
-                sh ''' 
+                sh '''
                 python3.9 -m venv venv
                 source venv/bin/activate
                 pip install -r requirements.txt
@@ -63,14 +31,10 @@ pipeline {
             }
         }
 
-          stage('Run Tests') {
+        stage('Run Tests') {
             steps {
                 sh 'source venv/bin/activate && python3 -m unittest discover -s ./tests -p "test.py"'
             }
         }
-
-
     }
-
-
 }
