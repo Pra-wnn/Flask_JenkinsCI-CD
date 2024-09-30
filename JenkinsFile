@@ -31,10 +31,26 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
+         stage('Run Tests') {
             steps {
-                sh 'source venv/bin/activate && python3 -m unittest discover -s ./tests -p "test.py"'
+                script {
+                    try {
+                        sh 'source venv/bin/activate && python3 -m unittest discover -s ./tests -p "test.py"'
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error("Tests failed: ${e.message}")
+                    }
+                }
             }
         }
+
+        post {
+        failure {
+            echo 'The pipeline failed. Tests did not pass.'
+        }
+        success {
+            echo 'All tests passed. The code can be merged to the main branch.'
+        }
+    }
     }
 }
