@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 db_config = {
     'user': os.getenv('MYSQL_USER', 'root'),
     'password': os.getenv('MYSQL_PASSWORD', 'root'),
-    'host': os.getenv('DB_HOST', 'db'),
+    'host': os.getenv('DB_HOST', 'localhost'),
     'database': os.getenv('MYSQL_DATABASE', 'mydbc')
 }
 

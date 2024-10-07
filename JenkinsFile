@@ -1,8 +1,25 @@
 pipeline {
-    agent any
+    // agent {
+    //     node {
+            
+            
+    //     label 'docker-agent-python'
+    //     }
+    // }
+
+     agent {
+        docker {
+            label 'docker-agent-python'
+            image 'hyperionduck/jenkinsjdk11pythonagent'
+        }
+    }
 
     triggers {
         githubPush()
+    }
+    
+     environment {
+        DOCKERHUB_CREDENTIALS = credentials('jenkins_dockerhub')
     }
 
     stages {
@@ -14,28 +31,26 @@ pipeline {
                     }
                 }
 
-        stage('Setup Python') {
-            steps {
-                sh 'sudo apt-get update'
-                sh 'sudo apt-get install python3.9 python3.9-venv -y'
-            }
-        }
-
+        
         stage('Create Virtual Environment and Install dependencies') {
             steps {
-                sh '''
-                python3.9 -m venv venv
-                source venv/bin/activate
-                pip install -r requirements.txt
-                '''
+                sh 'bash -c "python3.11 -m venv venv && source venv/bin/activate && pip install -r requirements.txt"'
+            
             }
         }
-
-         stage('Run Tests') {
+        
+         stage('Run Flask Application') {
+            steps {
+                sh 'bash -c "source venv/bin/activate && nohup python3 app.py & "'
+            }
+        }
+        
+        stage('Run Tests') {
             steps {
                 script {
                     try {
-                        sh 'source venv/bin/activate && python3 -m unittest discover -s ./tests -p "test.py"'
+                        sh 'bash -c "source venv/bin/activate && python3 -m unittest discover -s ./tests -p \'test.py\'"'
+                        sh 'echo $NODE_NAME'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         error("Tests failed: ${e.message}")
@@ -43,14 +58,30 @@ pipeline {
                 }
             }
         }
+        
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t hyperionduck/flask-app .'
+            }
+        }
 
-        post {
+        stage('Login to DockerHub') {
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+
+        
+    }
+    
+    post {
         failure {
             echo 'The pipeline failed. Tests did not pass.'
         }
         success {
             echo 'All tests passed. The code can be merged to the main branch.'
+        
         }
     }
-    }
+    
 }
